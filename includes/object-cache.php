@@ -723,6 +723,13 @@ class WP_Object_Cache {
             }
         }
 
+        // TODO: This is unsafe and can possibly allow MITM.
+        // Also make this configurable in the future.
+        $tlsSchemes = ['tls', 'rediss'];
+        if (isset($parameters['scheme']) && in_array($parameters['scheme'], $tlsSchemes)) {
+            $parameters['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
+        }
+
         $this->redis = new Predis\Client( $servers ?: $parameters, $options );
         $this->redis->connect();
 
